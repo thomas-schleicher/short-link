@@ -16,7 +16,7 @@ build_job:
         - apt-get update -y
         - apt-get install -y --no-install-recommends cmake libboost-all-dev
         - mkdir -p ${BUILD_DIR}
-        - cp Dockerfile ${BUILD_DIR}/
+        - cp dockerfile ${BUILD_DIR}/
         - cd ${BUILD_DIR}
         - cmake .. ${CMAKE_OPTIONS}
         - make -j$(nproc)
