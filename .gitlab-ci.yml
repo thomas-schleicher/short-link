@@ -40,6 +40,8 @@ package_job:
         - cd ${BUILD_DIR}
         - docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
         - docker save ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -o ${DOCKER_IMAGE_NAME}.tar
+        - ls -la
+        - tree ./
     only:
         - main
     artifacts:
