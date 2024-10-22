@@ -14,9 +14,7 @@ build_job:
     image: gcc:latest
     script:
         - apt-get update -y
-        - apt-get install -y cmake
-        - apt clean
-        - apt-get install -y libboost-all-dev
+        - apt-get install -y --no-install-recommends cmake libboost-all-dev
         - mkdir -p ${BUILD_DIR}
         - cd ${BUILD_DIR}
         - cmake .. ${CMAKE_OPTIONS}
