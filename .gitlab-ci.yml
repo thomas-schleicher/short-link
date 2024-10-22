@@ -32,6 +32,8 @@ package_job:
     image: docker:latest
     services:
         - docker:dind
+    variables:
+        DOCKER_HOST: tcp://docker:2375
     script:
         - echo "Building Docker image..."
         - docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
