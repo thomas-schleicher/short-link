@@ -28,7 +28,7 @@ package_job:
     stage: package
     image: docker:latest
     services:
-        - docker:bind
+        - docker:dind
     script:
         - echo "Building Docker image..."
         - docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
