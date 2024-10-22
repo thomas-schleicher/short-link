@@ -5,6 +5,8 @@ project(short-link VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(BUILD_SHARED_LIBS OFF)
+
 add_executable(Application src/main.cpp)
 
 find_package(Boost REQUIRED COMPONENTS filesystem system)

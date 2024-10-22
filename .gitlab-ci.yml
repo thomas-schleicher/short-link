@@ -37,7 +37,8 @@ build_job:
 package_job:
     stage: package
     script:
-        - docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${BUILD_DIR}
+        - cd ${BUILD_DIR}
+        - docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
         - docker save ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -o ${DOCKER_IMAGE_NAME}.tar
     only:
         - main
