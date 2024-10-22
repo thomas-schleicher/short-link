@@ -19,6 +19,10 @@ build_job:
         - cd ${BUILD_DIR}
         - cmake .. ${CMAKE_OPTIONS}
         - make -j$(nproc)
+    artifacts:
+      paths:
+        - ${BUILD_DIR}
+      expire_in: 1 hour
     tags:
       - docker
 
@@ -32,9 +36,13 @@ build_job:
 package_job:
     stage: package
     script:
-        - docker info
-        - docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
+        - docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ${BUILD_DIR}
+        - docker save ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -o ${DOCKER_IMAGE_NAME}.tar
     only:
         - main
+    artifacts:
+      expire_in: "1 days"
+      paths:
+        - ${DOCKER_IMAGE_NAME}.tar
     tags:
       - shell
