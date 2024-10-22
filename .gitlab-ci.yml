@@ -1,0 +1,36 @@
+stages:
+    - build
+    # - test
+    - package
+
+variables:
+    BUILD_DIR: "build"
+    CMAKE_OPTIONS: ""
+
+build_job:
+    stage: build
+    image: gcc:latest
+    script:
+        - apt-get update -y && apt-get install -y cmake
+        - mkdir -p ${BUILD_DIR}
+        - cd ${BUILD_DIR}
+        - cmake .. ${CMAKE_OPTIONS}
+        - make -j$(nproc)
+
+# test_job:
+#     stage: test
+#     image: gcc:latest
+#     script:
+#         - cd ${BUILD_DIR}
+#         - ctest --output-on-failure
+
+package_job:
+    stage: package
+    image: docker:latest
+    services:
+        - docker:bind
+    script:
+        - echo "Building Docker image..."
+        - docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
+    only:
+        - main
