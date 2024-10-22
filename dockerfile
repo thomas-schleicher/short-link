@@ -10,5 +10,10 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libboost-all-dev && \
     rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && \
+    ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libboost-filesystem1.74-dev libboost-system1.74-dev && \
+    rm -rf /var/lib/apt/lists/*
+
 EXPOSE ${OPEN_PORT}
 CMD [ "/${APPLICATION_BINARY}" ]
