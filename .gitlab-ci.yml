@@ -13,8 +13,10 @@ build_job:
     stage: build
     image: gcc:latest
     script:
-        - apt-get update -y 
-        - apt-get install -y cmake libboost-all-dev
+        - apt-get update -y
+        - apt-get install -y cmake
+        - apt clean
+        - apt-get install -y libboost-all-dev
         - mkdir -p ${BUILD_DIR}
         - cd ${BUILD_DIR}
         - cmake .. ${CMAKE_OPTIONS}
