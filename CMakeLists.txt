@@ -7,7 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(BUILD_SHARED_LIBS OFF)
 
-add_executable(Application src/main.cpp)
+include_directories(${PROJECT_SOURCE_DIR}/includes)
+add_executable(Application src/main.cpp
+    src/tcp_connection.cpp
+)
 
 find_package(Boost REQUIRED COMPONENTS filesystem system)
 
