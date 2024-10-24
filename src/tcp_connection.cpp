@@ -27,17 +27,11 @@ void tcp_connection::handle() {
 
 void tcp_connection::handle_read(const boost::system::error_code& error, size_t bytes_transferred) {
     if (!error) {
-        // std::istream request_stream(&buffer_);
-        // std::string request_line;
-        // std::getline(request_stream, request_line);
+        istream request_stream(&buffer_);
+        auto requst = request_parser_.parse(request_stream);
+        string response = response_handler_.handle(requst);
 
-        // auto parsed_data = request_parser_.parse(request_line);
-        // string response = response_handler_.handle(parsed_data);
-
-        std::string response = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, world!";
-        auto data = asio::buffer(response);
-
-        asio::async_write(socket_, data,
+        asio::async_write(socket_, asio::buffer(response),
         bind(&tcp_connection::handle_write, 
             shared_from_this(),
             asio::placeholders::error,

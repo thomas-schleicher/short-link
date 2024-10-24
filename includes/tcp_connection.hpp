@@ -4,6 +4,8 @@
 #include <boost/system/detail/error_code.hpp>
 #include <memory>
 #include <boost/asio.hpp>
+#include "request_parser.hpp"
+#include "response_handler.hpp"
 
 using namespace boost;
 using namespace std;
@@ -19,6 +21,8 @@ public:
 private:
     asio::ip::tcp::socket socket_;
     asio::streambuf buffer_;
+    request_parser request_parser_;
+    response_handler response_handler_;
 
     explicit tcp_connection(asio::io_context& io_context);
 
