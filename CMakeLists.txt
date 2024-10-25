@@ -9,7 +9,9 @@ set(BUILD_SHARED_LIBS OFF)
 
 include_directories(${PROJECT_SOURCE_DIR}/includes)
 add_executable(Application src/main.cpp
-    src/tcp_connection.cpp
+    src/http_connection.cpp
+    src/http_server.cpp
+    src/request_handler.cpp
 )
 
 find_package(Boost REQUIRED COMPONENTS filesystem system)
