@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
+cmake_policy(SET CMP0167 OLD)
 
 project(short-link VERSION 1.0 LANGUAGES CXX)
 
@@ -14,7 +15,7 @@ add_executable(Application src/main.cpp
     src/request_handler.cpp
 )
 
-find_package(Boost REQUIRED COMPONENTS filesystem system)
+find_package(Boost REQUIRED filesystem system)
 
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
