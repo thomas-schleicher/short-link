@@ -15,6 +15,10 @@ add_executable(Application src/main.cpp
     src/request_handler.cpp
 )
 
+add_custom_target(copy_frontend ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/frontend ${CMAKE_BINARY_DIR}/frontend
+)
+
 find_package(Boost REQUIRED filesystem system)
 
 if(Boost_FOUND)

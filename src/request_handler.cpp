@@ -5,37 +5,32 @@
 #include <boost/beast/http/status.hpp>
 #include <boost/beast/http/string_body.hpp>
 #include <regex>
+#include "request_handler.hpp"
 
-http::response<http::string_body> BadRequest(const std::string& why) {
+http::response<http::string_body> RequestHandler::BadRequest(const std::string& why) {
     http::response<http::string_body> response;
     response.result(http::status::bad_request);
     response.set(http::field::server, "Beast");
     response.set(http::field::content_type, "text/html");
     response.body() = why;
+    response.keep_alive(false);
     response.prepare_payload();
     return response;
 }
 
-http::response<http::string_body> RequestHandler::handle(const http::request<http::string_body>& request) {
-    string_view target = request.target();
+std::variant<
+        http::response<http::string_body>,
+        http::response<http::file_body>
+    > 
+    RequestHandler::handle(const http::request<http::string_body>& request) {
+    std::string target = request.target();
     http::verb method = request.method();
-    if (target == "/") {
-        if(method == http::verb::get) {
-            //case 1: "/" -> serve angular frontend or static frontend what ever
-            http::response<http::string_body> response;
-            response.result(http::status::ok); 
-            response.version(request.version());
-            response.set(http::field::server, "Beast");
-            response.set(http::field::content_type, "text/html");
 
-            //todo: load angular application / plain html & js
-            response.body() = "<html><h1>TEST</h1></html>";
-
-            response.prepare_payload();
-            return response;
+    if(method == http::verb::post){
+        if(target != "/") {
+            return BadRequest("Cannot post to anything other than /");
         }
-        else if (method == http::verb::post) {
-            if(request.find(http::field::content_type) == request.end()) {
+        if(request.find(http::field::content_type) == request.end()) {
                 return BadRequest("Content-Type header is required for POST requests");
             }
             auto content_type = request[http::field::content_type];
@@ -53,11 +48,27 @@ http::response<http::string_body> RequestHandler::handle(const http::request<htt
             }
 
             //todo: save url to database and return short url
-
-           return BadRequest("Request is actually not bad. processing " + url);
+            http::response<http::string_body> response;
+            response.result(http::status::created);
+            response.set(http::field::server, "Beast");
+            response.set(http::field::content_type, "text/plain");
+            response.body() = "127.0.0.1:8080/asdf";
+            response.keep_alive(false);
+            response.prepare_payload();
+            return response;
+    } else if (method == http::verb::get) {
+        if(target == "/"){
+            target = "/index.html";
         }
-    }else {
-        if(method == http::verb::get){
+        if(target == "/index.html" || target == "/index.js") {
+            error_code ec;
+            http::response<http::file_body> response = handle_file_request("frontend" + target, ec);
+            if(ec) {
+                return BadRequest("Error reading file");
+            }else {
+                return response;
+            }
+        } else {
             http::response<http::string_body> response;
             std::string short_url = target.substr(1);
 
@@ -68,15 +79,27 @@ http::response<http::string_body> RequestHandler::handle(const http::request<htt
             response.version(request.version());
             response.set(http::field::server, "Beast");
             response.body() = "Redirecting to " + expanded_url;
+            response.keep_alive(false);
             response.prepare_payload();
-            return response;            
-        } else {
-            return BadRequest("Method not allowed");
+            return response;
         }
-    }
-        
-    //case 2: "/url" -> redirect to expanded url
-    //case 3: neither -> redirect to 404
 
+    }
+    
     return BadRequest("No rule matched.");
+}
+http::response<http::file_body> RequestHandler::handle_file_request(const std::string& path, error_code &ec) {
+    http::file_body::value_type file;
+    file.open(path.c_str(), file_mode::read, ec);
+    http::response<http::file_body> response;
+    if(!ec){
+        response.result(http::status::ok);
+        response.set(http::field::server, "Beast");
+        response.set(http::field::content_type, "text/html");
+        response.body() = std::move(file);
+        response.keep_alive(false);
+        response.prepare_payload();
+    };
+    return response;
+
 }

@@ -8,6 +8,7 @@
 #include <boost/beast/http/string_body.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/core.hpp>
+#include <variant>
 
 using namespace std;
 using namespace boost::asio;
@@ -25,7 +26,7 @@ private:
     ip::tcp::socket socket_;
     boost::beast::flat_buffer buffer_;
     http::request<http::string_body> request_;
-    http::response<http::string_body> response_;
+    variant<http::response<http::string_body>, http::response<http::file_body>> response_;
     RequestHandler request_handler_;
 
     void read();

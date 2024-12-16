@@ -17,18 +17,26 @@ document.getElementById("urlInput").addEventListener("input", function() {
 document.getElementById("shortenButton").addEventListener("click", async function() {
     const urlInput = document.getElementById("urlInput").value;
     const outputContainer = document.getElementById("output-container");
+    const errorContainer = document.getElementById("error-container");
 
     if (urlInput) {
         // const shortenedUrl = urlInput + "-short"; // only for testing
 
-        const shortenedUrl = await fetch("0.0.0.0:8080/", {
+        const response = await fetch("/", {
             method: "POST",
             headers: {
                 "Content-Type": "text/plain",
             },
             body: urlInput,
         });
-
-        outputContainer.innerHTML = `<p>Shortened URL: <a href="${shortenedUrl}" target="_blank">${shortenedUrl}</a></p>`;
+        if (response.ok){
+            const shortenedUrl = await response.text();
+            outputContainer.innerHTML = `<p>Shortened URL: <a href="${shortenedUrl}" target="_blank">${shortenedUrl}</a></p>`;
+            errorContainer.innerHTML = "";
+        }else{
+            const error = await response.text();
+            errorContainer.innerHTML = `<p>Something went wrong: ${error}</p>`;
+            outputContainer.innerHTML = "";
+        }
     }
 });
