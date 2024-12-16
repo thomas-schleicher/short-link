@@ -38,6 +38,7 @@ void HttpConnection::write() {
     auto self = shared_from_this();
     http::async_write(socket_, response_, 
         [self](boost::beast::error_code error_code, size_t bytes_transferred) {
+            cout << "Sending response:\n" << self->response_ << endl;
             if (!error_code) {
                 auto error_code_socket = self->socket_.shutdown(ip::tcp::socket::shutdown_send, error_code);
                 if (error_code_socket) {
@@ -45,6 +46,10 @@ void HttpConnection::write() {
                 }
             } else {
                 cerr << "Error writing response: " << error_code.message() << endl;
+                auto error_code_socket = self->socket_.shutdown(ip::tcp::socket::shutdown_both, error_code);
+                if (error_code_socket) {
+                    cerr << "Error shuting down socket: " << error_code_socket.message() << endl;
+                }
             }
         });
 }
