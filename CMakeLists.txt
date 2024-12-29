@@ -21,6 +21,9 @@ add_custom_target(copy_frontend ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/frontend ${CMAKE_BINARY_DIR}/frontend
 )
 
+add_dependencies(Application copy_frontend)
+
+
 find_package(Boost REQUIRED COMPONENTS filesystem system)
 
 if(Boost_FOUND)

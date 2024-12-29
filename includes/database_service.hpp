@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 #include <soci/soci.h>
-#include <soci/sqlite3/soci-sqlite3.h>
 
 class DatabaseService {
 public:
@@ -27,7 +26,7 @@ private:
     std::string db_path_;
     std::size_t pool_size_;
     std::vector<std::shared_ptr<soci::session>> connection_pool_;
-    std::size_t current_index_ = 0; // Index used for round-robin selection
+    std::size_t current_index_ = 0;
 
     static DatabaseService* INSTANCE;
     static std::mutex singleton_mutex;

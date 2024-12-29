@@ -1,9 +1,8 @@
 #include "../includes/http_connection.hpp"
-#include <boost/asio/io_context.hpp>
+#include "../includes/log_utils.hpp"
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/beast/core/error.hpp>
 #include <iostream>
-#include <sys/socket.h>
 
 HttpConnection::HttpConnection(io_context& io_context) 
 : socket_(io_context) {};
@@ -22,17 +21,28 @@ void HttpConnection::process_connection() {
 
 void HttpConnection::read() {
     auto self = shared_from_this();
+
     http::async_read(socket_, buffer_, request_,
         [self](boost::beast::error_code error_code, size_t bytes_transferred) {
             if (!error_code) {
-                cout << "Request received:\n" << self->request_ << endl;
+                LOG(LogLevel::INFO, "Request details:");
+                LOG(LogLevel::INFO, "\tMethod: " + std::string(self->request_.method_string()));
+                LOG(LogLevel::INFO, "\tTarget: " + std::string(self->request_.target()));
+                LOG(LogLevel::INFO, "\tBody: " + std::string(self->request_.body()));
+
+                // Log before forwarding to RequestHandler
+                LOG(LogLevel::INFO, "Forwarding request to RequestHandler...");
                 self->response_ = self->request_handler_.handle(self->request_);
+
                 self->write();
             } else {
-                cerr << "Error reading: " << error_code.message() << endl;
+                LOG(LogLevel::ERROR, "Error reading request: " + error_code.message());
             }
         });
 }
+
+
+
 
 void HttpConnection::write() {
     auto self = shared_from_this();
