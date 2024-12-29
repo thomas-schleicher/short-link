@@ -1,32 +1,33 @@
 #ifndef DATABASE_SERVICE_HPP
 #define DATABASE_SERVICE_HPP
 
-#include <boost/asio/io_context.hpp>
-#include <boost/system/detail/error_code.hpp>
-#include <cstddef>
-#include <boost/redis/connection.hpp>
+#include <string>
 #include <functional>
-#include <memory>
 #include <mutex>
+#include <memory>
+#include <vector>
+#include <soci/soci.h>
+#include <soci/sqlite3/soci-sqlite3.h>
 
 class DatabaseService {
 public:
-    static DatabaseService& getInstance(boost::asio::io_context& io_context, std::size_t pool_size);
-    void asyncSetKey(const std::string& key, const std::string& value, std::function<void(boost::system::error_code)> callback);
-    void asyncGetKey(const std::string& key, std::function<void(boost::system::error_code, std::string)> callback); //we could use a varient here for the result
+    static DatabaseService& getInstance(const std::string& db_path, std::size_t pool_size);
+    void shortenURL(const std::string& longURL, std::function<void(std::error_code, std::string)> callback);
+    void getLongURL(const std::string& shortCode, std::function<void(std::error_code, std::string)> callback);
 
-private:    
-    DatabaseService(boost::asio::io_context& io_context, std::size_t pool_size = 4);
+private:
+    DatabaseService(const std::string& db_path, std::size_t pool_size = 4);
     ~DatabaseService();
     DatabaseService(DatabaseService const&);
     void operator=(DatabaseService const&);
 
-    std::shared_ptr<boost::redis::connection> getConnection();
+    std::shared_ptr<soci::session> getConnection();
+    std::string generateShortUUID();
 
-    boost::asio::io_context& io_context_;
+    std::string db_path_;
     std::size_t pool_size_;
-    std::vector<std::shared_ptr<boost::redis::connection>> connection_pool_;
-    std::size_t current_index_ = 0; //index used for round robin selection
+    std::vector<std::shared_ptr<soci::session>> connection_pool_;
+    std::size_t current_index_ = 0; // Index used for round-robin selection
 
     static DatabaseService* INSTANCE;
     static std::mutex singleton_mutex;
