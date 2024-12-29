@@ -1,0 +1,13 @@
+# Ignore build files
+build/
+cmake-build-*
+
+# Ignore editor-specific files
+*.swp
+*.log
+.idea/
+.vscode/
+
+# Ignore version control directories
+.git/
+.gitignore
