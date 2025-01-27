@@ -2,7 +2,8 @@ document.getElementById("urlInput").addEventListener("input", function() {
     const urlInput = document.getElementById("urlInput");
     const shortenButton = document.getElementById("shortenButton");
 
-    const urlPattern = /^(https?:\/\/)?([\w\d-]+\.)+[a-z]{2,6}(\/[\w\d-]*)*\/?$/i;
+    const urlPattern = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/i
+
     const isValid = urlPattern.test(urlInput.value);
 
     if (isValid) {
