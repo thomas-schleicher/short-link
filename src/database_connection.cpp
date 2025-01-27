@@ -5,6 +5,8 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <stdexcept>
 #include <mutex>
+#include <soci/soci.h>
+#include <soci/sqlite3/soci-sqlite3.h>
 
 std::mutex DatabaseService::singleton_mutex;
 DatabaseService* DatabaseService::INSTANCE = nullptr;
